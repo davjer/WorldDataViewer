@@ -1,0 +1,398 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+  <head>
+    <title>World DHS data viewer</title>
+    <meta content="text/html; charset=utf-8" http-equiv="Content-Type">
+
+    <link href="dist/jqvmap.css" media="screen" rel="stylesheet" type="text/css"/>
+   <style type="text/css">
+	.float-left{
+	  float:left;
+	}
+	.button1 {background-color: #4CAF50;}
+	</style>
+
+
+    <script type="text/javascript" src="http://code.jquery.com/jquery-1.11.3.min.js"></script>
+    <script type="text/javascript" src="dist/jquery.vmap.js"></script>
+    <script type="text/javascript" src="dist/maps/jquery.vmap.world.js" charset="utf-8"></script>
+    <script src="js/jquery.vmap.sampledata.js"></script>
+
+
+    <script>
+		var reds=['#F6CFC7', '#FF2D00'];
+		var blues=['#C8EEFF', '#006491'];
+		var browns=['#F6E3C7', '#F0930A'];
+		var greens=['#92BD86', '#31BB09'];
+		var data = new Array();
+		var ich_1="";
+		var ich_2="";
+		
+		
+      jQuery(document).ready(function () {
+		
+
+      });
+	  
+	  
+	  function load_map1(data){
+	  	
+		  jQuery('#vmap1').vectorMap({
+		      map: 'world_en',
+		      backgroundColor: null,
+		      color: '#ffffff',
+		      hoverOpacity: 0.7,
+		      selectedColor: '#666666',
+		      enableZoom: true,
+		      showTooltip: true,
+		      values: data,
+		      scaleColors: blues,
+		      normalizeFunction: 'polynomial',
+		  onRegionClick: function(element, code, region)
+		      {
+		          var message = 'You clicked "'
+		              + region
+		              + '" which has the code: '
+		              + code.toUpperCase();
+					  +
+
+		          alert(message);
+		      }
+		  });
+
+		
+	  }	  
+
+
+
+
+	  
+	  // load countries
+function loadCountries1()
+          {
+              //Obtain the particular select object.
+              var objSelect1 = document.getElementById("lstCountries1");
+	
+
+              //Set API URL to obtain countries list in json format.
+               
+              var apiURL = "http://api.dhsprogram.com/rest/dhs/countries";
+               
+              //Load the List of Countries.
+              $.getJSON(apiURL, function(returnData) {
+                  $.each(returnData.Data, function (index, value) {
+                      //Create a new options element, add it to the select object.
+                      var opt = document.createElement('option');
+                      opt.value = value.DHS_CountryCode;
+                      opt.text = value.CountryName;
+                      objSelect1.appendChild(opt);
+					 
+                  });
+              });
+          }
+		  
+function loadCountries2()
+          {
+              //Obtain the particular select object.
+         
+			   var objSelect2 = document.getElementById("lstCountries2");
+
+              //Set API URL to obtain countries list in json format.
+               
+              var apiURL = "http://api.dhsprogram.com/rest/dhs/countries";
+               
+              //Load the List of Countries.
+              $.getJSON(apiURL, function(returnData) {
+                  $.each(returnData.Data, function (index, value) {
+                      //Create a new options element, add it to the select object.
+                      var opt = document.createElement('option');
+                      opt.value = value.DHS_CountryCode;
+                      opt.text = value.CountryName;
+                  
+					  objSelect2.appendChild(opt);
+                  });
+              });
+          }		  
+		  
+		  
+		  /// display data
+    function displayData1()
+          {
+              //Obtain the particular Table object.
+              var objTable1 = document.getElementById("tblData1");
+			
+ 
+              //Set API URL to obtain data in json format.
+             
+			  valsel= $("#lstData1").val();
+
+			 			   
+			               //Set API URL to obtain data in json format.
+             
+			              // var apiURL = "http://api.dhsprogram.com/rest/dhs/data/ED_EDAT_W_PRI";
+			 
+			 			 var apiURL = "http://api.dhsprogram.com/rest/dhs/data/HC_ELEC_H_ELC";
+			 
+			 			 if(valsel!=""){
+			 			 	apiURL="http://api.dhsprogram.com/rest/dhs/data/"+ valsel;
+			 			 }	
+             
+						 alert(apiURL);
+             
+             var data = new Object();
+			  i=0;
+			   
+              //Create a table with the list of Data.
+              $.getJSON(apiURL, function(returnData) {
+                  $.each(returnData.Data, function (index, value) {
+					  //make array
+				     ich_1=value.DHS_CountryCode;
+					 ich_2=value.Value;
+					 data[ich_1.toLowerCase()]=ich_2.toString();
+					 
+					  /*
+					  if(ich_1=="" && ich_2==""){
+					  ich_1=value.DHS_CountryCode;
+					  ich_2=value.DHS_CountryCode;
+					  data.push({'"'+ich_1.toLowerCase()+'"':'"'+value.Value+'"'});
+				      }else{
+				      	  
+						  if(value.DHS_CountryCode==ich_1){
+						  	
+						  }else{
+						  	
+							
+						  }
+						
+						
+				      }
+					  */
+                      //Create a new row element
+                      var newRow = document.createElement('tr');
+ 
+                      //create cell for country
+                      var newCell = document.createElement('td');
+                      newCell.innerHTML = value.DHS_CountryCode;
+                      newRow.appendChild(newCell);
+ 
+                      //Create a new cell for Indicator.
+                      var newCell = document.createElement('td');
+                      newCell.innerHTML = value.Indicator;
+                      newRow.appendChild(newCell);
+ 
+                      //Create a new cell for Survey Year.
+                      newCell = document.createElement('td');
+                      newCell.innerHTML = value.SurveyYear;
+                      newRow.appendChild(newCell);
+ 
+                      //Create a new cell for Characteristic Label.
+                      newCell = document.createElement('td');
+                      newCell.innerHTML = value.CharacteristicLabel;
+                      newRow.appendChild(newCell);
+ 
+                      //Create a new cell for ByVariable Label.
+                      newCell = document.createElement('td');
+                      newCell.innerHTML = value.ByVariableLabel;
+                      newRow.appendChild(newCell);
+ 
+                      //Create a new cell for Value.
+                      newCell = document.createElement('td');
+                      newCell.innerHTML = value.Value;
+                      newRow.appendChild(newCell);
+ 
+                      //Append to Table.
+                      objTable1.appendChild(newRow);
+					
+                  });
+              
+				 // console.log(JSON.stringify(data));
+			  
+				  load_map1(data);
+			  });
+          }
+		  
+		  function go_data(){
+		  	
+			  displayData2();
+			
+		  }	  
+		  
+    function displayData2()
+          {
+              //Obtain the particular Table object.
+             
+			  var objTable2 = document.getElementById("tblData2");
+ valsel= $("#lstData1").val();
+
+			  alert(valsel); 
+              //Set API URL to obtain data in json format.
+             
+             // var apiURL = "http://api.dhsprogram.com/rest/dhs/data/ED_EDAT_W_PRI";
+			 
+			 var apiURL = "http://api.dhsprogram.com/rest/dhs/data/HC_ELEC_H_ELC";
+			 
+			 if(valsel!=""){
+			 	apiURL="http://api.dhsprogram.com/rest/dhs/data/"+ valsel;
+			 }	
+             
+             var data2 = new Object();
+			  i=0;
+			   
+              //Create a table with the list of Data.
+              $.getJSON(apiURL, function(returnData) {
+                  $.each(returnData.Data, function (index, value) {
+					  //make array
+				     ich_1=value.DHS_CountryCode;
+					 ich_2=value.Value;
+					 data2[ich_1.toLowerCase()]=ich_2.toString();
+					 
+					  /*
+					  if(ich_1=="" && ich_2==""){
+					  ich_1=value.DHS_CountryCode;
+					  ich_2=value.DHS_CountryCode;
+					  data.push({'"'+ich_1.toLowerCase()+'"':'"'+value.Value+'"'});
+				      }else{
+				      	  
+						  if(value.DHS_CountryCode==ich_1){
+						  	
+						  }else{
+						  	
+							
+						  }
+						
+						
+				      }
+					  */
+                      //Create a new row element
+                      var newRow = document.createElement('tr');
+ 
+                      //create cell for country
+                      var newCell = document.createElement('td');
+                      newCell.innerHTML = value.DHS_CountryCode;
+                      newRow.appendChild(newCell);
+ 
+                      //Create a new cell for Indicator.
+                      var newCell = document.createElement('td');
+                      newCell.innerHTML = value.Indicator;
+                      newRow.appendChild(newCell);
+ 
+                      //Create a new cell for Survey Year.
+                      newCell = document.createElement('td');
+                      newCell.innerHTML = value.SurveyYear;
+                      newRow.appendChild(newCell);
+ 
+                      //Create a new cell for Characteristic Label.
+                      newCell = document.createElement('td');
+                      newCell.innerHTML = value.CharacteristicLabel;
+                      newRow.appendChild(newCell);
+ 
+                      //Create a new cell for ByVariable Label.
+                      newCell = document.createElement('td');
+                      newCell.innerHTML = value.ByVariableLabel;
+                      newRow.appendChild(newCell);
+ 
+                      //Create a new cell for Value.
+                      newCell = document.createElement('td');
+                      newCell.innerHTML = value.Value;
+                      newRow.appendChild(newCell);
+ 
+                      //Append to Table.
+                   
+					  objTable2.appendChild(newRow);
+                  });
+              
+				 // console.log(JSON.stringify(data));
+			  
+				       //load_map2(data2);
+			  });
+          }
+		  
+		  function go_data(){
+		  	
+			
+			
+		  }  
+	  
+    </script>
+  </head>
+  <body onload="displayData1();">
+	 
+	  
+	<div id="content1" class="float-left left">  
+    <div id="vmap1" style="width: 600px; height: 600px;"></div>
+ 
+  <div id="datas1">
+	  <!--
+	  data
+	  Countries:<br>
+	          <select id="lstCountries1">
+	          </select-->
+			  
+			  
+	    <table id="tblData1">
+	        <tr>
+				<th>Country</th>
+	            <th>Indicator</th>
+	            <th>Survey Year</th>
+	            <th>Characteristic Label</th>
+	            <th>ByVariable Label</th>
+	            <th>Value</th>
+	        </tr>
+	    </table>	  
+  </div>
+  
+     </div>
+	 
+<!------>
+	<div id="content2" class="float-left left">  
+    <div id="vmap2" style="width: 600px; height: 600px;">
+  	 <div class="float-left">
+	  Data1:<br>
+  	          <select id="lstData1">
+				  <option value="">None</option>
+				  <option value="WS_SRCE_H_NIM">Households using an unimproved water source</option>
+				  <option value="HC_ELEC_H_ELC">Households with electricity</option>
+  	          </select>
+	</div>
+	<div class="float-left">		  
+	  Data2:<br>
+	          <select id="lstData2">
+			  <option value="">None</option>
+			  <option value="WS_SRCE_H_NIM">Households using an unimproved water source</option>
+			  <option value="HC_ELEC_H_ELC">Households with electricity</option>
+	          </select>	
+	</div>		  
+	   <div>
+		   <br>
+	 
+		 <input type="button" value="Get Data" onclick="displayData1();"/>		  	  
+       </div>	
+    </div>
+ 
+  <div id="datas2">
+	  
+	 <!-- data
+	  Countries:<br>
+	          <select id="lstCountries2">
+	          </select-->
+			  
+			  
+	    <table id="tblData2">
+	        <tr>
+				<th>Country</th>
+	            <th>Indicator</th>
+	            <th>Survey Year</th>
+	            <th>Characteristic Label</th>
+	            <th>ByVariable Label</th>
+	            <th>Value</th>
+	        </tr>
+	    </table>	  
+  </div>
+  
+     </div>	 
+	 
+<!------>	 
+	 
+  </body>
+</html>
